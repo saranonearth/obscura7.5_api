@@ -1,10 +1,9 @@
-const { OAuth2Client } = require("google-auth-library");
-
 const {
   verifyToken,
   getCreatePlayer,
   generateToken
 } = require("../util/resolverHelpers");
+const checkAuth = require("../util/checkAuth");
 
 module.exports = {
   Mutation: {
@@ -21,6 +20,11 @@ module.exports = {
         console.log(error);
         throw new Error("Authentication Failed");
       }
+    },
+    async sendInvite(_, { teamId, playerId }, context) {
+      const player = await checkAuth(context);
+      console.log("player", player);
+      return "YOYO";
     }
   }
 };

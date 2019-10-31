@@ -15,8 +15,8 @@ exports.verifyToken = async token => {
 
     return res.getPayload();
   } catch (error) {
-    console.log(err);
-    throw new AuthenticationError("Token cannot be verified", err);
+    console.log(error);
+    throw new AuthenticationError("Token cannot be verified", error);
   }
 };
 

@@ -27,8 +27,8 @@ const teamSchema = new Schema(
       }
     ],
     teamAdmin: {
-      type: Boolean,
-      default: false
+      type: Schema.Types.ObjectId,
+      ref: "players"
     },
     uniqueKey: String,
     invitaions: [

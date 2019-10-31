@@ -11,5 +11,6 @@ module.exports = gql`
 
   type Mutation {
     auth(token: String!): token!
+    sendInvite(teamId: String!, playerId: String!): String!
   }
 `;
