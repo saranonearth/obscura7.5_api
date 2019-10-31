@@ -1,11 +1,15 @@
 const gql = require("graphql-tag");
 
 module.exports = gql`
+  type token {
+    token: String!
+  }
+
   type Query {
     hello: String!
   }
 
   type Mutation {
-    auth(token: String!): String!
+    auth(token: String!): token!
   }
 `;

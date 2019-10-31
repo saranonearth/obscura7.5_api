@@ -1,7 +1,7 @@
+const playerResolver = require("./playerResolver");
+
 module.exports = {
-  Query: {
-    hello() {
-      return "Hey";
-    }
+  Mutation: {
+    ...playerResolver.Mutation
   }
 };

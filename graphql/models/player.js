@@ -5,7 +5,10 @@ const Schema = mongoose.Schema;
 const playerSchema = new Schema(
   {
     name: String,
-    gameName: String,
+    gameName: {
+      type: String,
+      default: null
+    },
     email: {
       type: String,
       unique: true

@@ -13,7 +13,9 @@ const server = new ApolloServer({
 mongoose
   .connect(process.env.MONGOURI, {
     useNewUrlParser: true,
-    useUnifiedTopology: true
+    useUnifiedTopology: true,
+    useCreateIndex: true,
+    useNewUrlParser: true
   })
   .then(() => {
     console.log("Database Connected");
