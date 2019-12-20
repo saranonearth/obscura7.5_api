@@ -3,6 +3,7 @@ require("dotenv").config();
 const typeDefs = require("./graphql/typedef");
 const mongoose = require("mongoose");
 const resolvers = require("./graphql/resolvers");
+const checkAuth = require("./graphql/util/checkAuth");
 const PORT = 4000 || process.env.PORT;
 
 const server = new ApolloServer({

@@ -12,7 +12,9 @@ module.exports = async function(context) {
       try {
         const playerId = await jwt.verify(token, process.env.JWTS);
         const player = await Player.findById(playerId.id);
-        console.log(player);
+        if (!player) {
+          throw new AuthenticationError("Player not found.");
+        }
         return player;
       } catch (error) {
         throw new AuthenticationError("Token Invalid");

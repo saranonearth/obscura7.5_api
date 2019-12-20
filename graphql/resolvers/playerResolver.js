@@ -1,7 +1,8 @@
 const {
   verifyToken,
   getCreatePlayer,
-  generateToken
+  generateToken,
+  createGameTeam
 } = require("../util/resolverHelpers");
 const checkAuth = require("../util/checkAuth");
 
@@ -21,10 +22,28 @@ module.exports = {
         throw new Error("Authentication Failed");
       }
     },
-    async sendInvite(_, { teamId, playerId }, context) {
+    async createTeam(_, data, context) {
       const player = await checkAuth(context);
-      console.log("player", player);
-      return "YOYO";
+
+      const team = await createGameTeam(data, player);
+
+      return {
+        teamName: team.teamName,
+        image: team.image,
+        curlevel: team.curlevel,
+        stream: team.stream,
+        answerset: team.answerset,
+        members: team.members,
+        teamAdmin: team.teamAdmin,
+        uniqueKey: team.uniqueKey,
+        invitations: team.invitations
+      };
     }
+
+    //   async sendInvite(_, { teamId, playerId }, context) {
+    //     const player = await checkAuth(context);
+    //     console.log("player", player);
+    //     return "YOYO";
+    //   }
   }
 };

@@ -6,10 +6,18 @@ const teamSchema = new Schema(
   {
     teamName: String,
     image: String,
-    curlevel: Number,
+    curlevel: {
+      levelNo: Number,
+      level: Schema.Types.ObjectId
+    },
+    levelsSolved: {
+      type: Number,
+      default: 0
+    },
     stream: String,
-    set: String,
-    memebers: [
+    answerset: String,
+    bio: String,
+    members: [
       {
         player: {
           type: Schema.Types.ObjectId,
