@@ -32,8 +32,17 @@ module.exports = gql`
     bio: String!
   }
 
+  type Player {
+    name: String
+    gameName: String
+    email: String!
+    group: ID!
+    firstTime: Boolean
+    image: String!
+  }
   type Query {
     hello: String!
+    getGamePlayer: Player!
   }
 
   type Mutation {

@@ -2,7 +2,8 @@ const {
   verifyToken,
   getCreatePlayer,
   generateToken,
-  createGameTeam
+  createGameTeam,
+  getPlayer
 } = require("../util/resolverHelpers");
 const checkAuth = require("../util/checkAuth");
 
@@ -45,5 +46,22 @@ module.exports = {
     //     console.log("player", player);
     //     return "YOYO";
     //   }
+  },
+  Query: {
+    async getGamePlayer(_, a, context) {
+      const player = await checkAuth(context);
+
+      const Player = await getPlayer(player._id);
+      console.log(Player);
+      const { name, gameName, image, firstTime, email, group } = Player;
+      return {
+        name,
+        gameName,
+        image,
+        firstTime,
+        email,
+        group
+      };
+    }
   }
 };

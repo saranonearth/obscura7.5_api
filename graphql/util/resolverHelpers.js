@@ -102,6 +102,7 @@ const randomPathSet = () => {
 exports.getPlayer = async id => {
   try {
     const player = await Player.findOne({ _id: id });
+    console.log(player);
     return player;
   } catch (error) {
     throw new Error("Error occured while fetching Player.");
