@@ -99,11 +99,26 @@ const randomPathSet = () => {
 };
 
 //Function to get player
-exports.getPlayer = async id => {
+exports.getPlayer = async (id, state) => {
   try {
-    const player = await Player.findOne({ _id: id });
-    console.log(player);
-    return player;
+    if (state === "WITHOUT_TEAM") {
+      const player = await Player.findOne({ _id: id });
+      console.log("PLAYER", player);
+      if (!player) {
+        throw new Error("No Player found.");
+      }
+      return player;
+    }
+    if (state === "WITH_TEAM") {
+      const player = await (await Player.findOne({ _id: id }))
+        .populate("group")
+        .execPopulate();
+      if (!player) {
+        throw new Error("No Player found.");
+      }
+      console.log("PLAYER_W", player);
+      return player;
+    }
   } catch (error) {
     throw new Error("Error occured while fetching Player.");
   }
@@ -134,13 +149,29 @@ exports.createGameTeam = async (data, player) => {
     });
 
     const res = await newTeam.save();
+    const finalTeam = await res.populate("members.player").execPopulate();
 
-    const admin = await this.getPlayer(player._id);
+    const admin = await this.getPlayer(player._id, "WITHOUT_TEAM");
     admin.group = res._id;
     await admin.save();
 
-    return res._doc;
+    return finalTeam._doc;
   } catch (error) {
     throw new Error("Error occured while creating a new team.", error);
+  }
+};
+
+exports.getTeam = async id => {
+  try {
+    const team = await (await Team.findOne({ _id: id }))
+      .populate("members.player")
+      .execPopulate();
+    console.log("TEAM", team);
+    if (!team) {
+      throw new Error("No Team found.");
+    }
+    return team;
+  } catch (error) {
+    throw new Error("No Team found.", error);
   }
 };

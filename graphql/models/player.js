@@ -15,7 +15,7 @@ const playerSchema = new Schema(
     },
     group: {
       type: Schema.Types.ObjectId,
-      ref: "groups",
+      ref: "teams",
       default: null
     },
     firstTime: {

@@ -39,9 +39,12 @@ const teamSchema = new Schema(
       ref: "players"
     },
     uniqueKey: String,
-    invitaions: [
+    invitations: [
       {
-        player: Schema.Types.ObjectId
+        player: {
+          type: Schema.Types.ObjectId,
+          ref: "players"
+        }
       }
     ]
   },
