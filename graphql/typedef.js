@@ -53,6 +53,7 @@ module.exports = gql`
     getGameTeam(teamId: ID!): Team!
     getParticularPlayer(playerId: String!): Player!
     getTeamInvitations: [dInvitations]!
+    getAllTeams: [Team]!
   }
 
   type Mutation {

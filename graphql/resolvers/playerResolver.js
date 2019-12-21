@@ -7,6 +7,7 @@ const {
   getTeam
 } = require("../util/resolverHelpers");
 const checkAuth = require("../util/checkAuth");
+const Team = require("../models/team");
 
 module.exports = {
   Mutation: {
@@ -207,6 +208,18 @@ module.exports = {
       const invitations = popPlayerTeam.invitations;
 
       return invitations;
+    },
+    async getAllTeams() {
+      try {
+        const teams = await Team.find({})
+          .populate("members.player")
+          .exec();
+        console.log(teams);
+
+        return teams;
+      } catch (error) {
+        throw new Error("Teams could not be fetched.");
+      }
     }
   }
 };
