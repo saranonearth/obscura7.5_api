@@ -104,6 +104,31 @@ module.exports = {
         uniqueKey: team.uniqueKey,
         invitations: team.invitations
       };
+    },
+    async getParticularPlayer(_, { playerId }, context) {
+      const player = await getPlayer(playerId, "WITH_TEAM");
+      console.log("PLAYER", player);
+
+      return {
+        id: player._id,
+        name: player.name,
+        gameName: player.gameName,
+        image: player.image,
+        firstTime: player.firstTime,
+        email: player.email,
+        group: player.group
+      };
+    },
+    async getTeamInvitations(_, a, context) {
+      const player = await checkAuth(context);
+
+      const playerTeam = await getTeam(player.group);
+      const popPlayerTeam = await playerTeam
+        .populate("invitations.player")
+        .execPopulate();
+      const invitations = popPlayerTeam.invitations;
+
+      return invitations;
     }
   }
 };

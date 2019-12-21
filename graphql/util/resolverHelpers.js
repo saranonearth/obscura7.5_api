@@ -113,6 +113,7 @@ exports.getPlayer = async (id, state) => {
       const player = await (await Player.findOne({ _id: id }))
         .populate("group")
         .execPopulate();
+
       if (!player) {
         throw new Error("No Player found.");
       }
