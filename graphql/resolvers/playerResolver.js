@@ -67,6 +67,84 @@ module.exports = {
       await team.save();
 
       return "Invitation sent successfully.";
+    },
+    async acceptInvite(_, { playerId, inviteId }, context) {
+      const adminPlayer = await checkAuth(context);
+      const team = await getTeam(adminPlayer.group);
+
+      //should be admin
+      console.log(adminPlayer._id.toString() === team.teamAdmin.toString());
+      if (adminPlayer._id.toString() === team.teamAdmin.toString()) {
+        console.log("HERE");
+
+        // updating team member
+
+        let newMembers = team.members;
+
+        if (
+          newMembers.find(e => e.player._id.toString() === playerId.toString())
+        ) {
+          console.log("FUCKIN");
+          throw new Error(
+            "Player to be added to the team is already a member."
+          );
+        } else {
+          newMembers.push({
+            player: playerId,
+            solvedLevels: [],
+            levelsSolved: 0
+          });
+
+          team.members = newMembers;
+
+          await team.save();
+
+          // updating player
+          const iplayer = await getPlayer(playerId, "WITHOUT_TEAM");
+          iplayer.group = team._id;
+          await iplayer.save();
+
+          // updating invitations
+          let Invitations = team.invitations;
+          const newInvitations = Invitations.filter(
+            e => e._id.toString() !== inviteId.toString()
+          );
+
+          team.invitations = newInvitations;
+          const res = await team.save();
+
+          const newTeam = await res.populate("members.player").execPopulate();
+          console.log(newTeam);
+          const {
+            _id,
+            teamName,
+            image,
+            curlevel,
+            stream,
+            answerset,
+            members,
+            teamAdmin,
+            uniqueKey,
+            invitations,
+            bio
+          } = newTeam;
+          return {
+            id: _id,
+            teamName,
+            image,
+            curlevel,
+            stream,
+            answerset,
+            members,
+            teamAdmin,
+            uniqueKey,
+            invitations,
+            bio
+          };
+        }
+      } else {
+        throw new Error("Requesting player is not the admin");
+      }
     }
   },
   Query: {

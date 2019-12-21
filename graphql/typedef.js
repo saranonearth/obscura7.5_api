@@ -64,5 +64,6 @@ module.exports = gql`
       uniqueKey: String!
     ): Team!
     sendInvite(teamId: String!): String!
+    acceptInvite(playerId: String!, inviteId: String!): Team!
   }
 `;

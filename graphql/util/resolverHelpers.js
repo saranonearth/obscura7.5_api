@@ -103,7 +103,7 @@ exports.getPlayer = async (id, state) => {
   try {
     if (state === "WITHOUT_TEAM") {
       const player = await Player.findOne({ _id: id });
-      console.log("PLAYER", player);
+
       if (!player) {
         throw new Error("No Player found.");
       }
@@ -117,7 +117,7 @@ exports.getPlayer = async (id, state) => {
       if (!player) {
         throw new Error("No Player found.");
       }
-      console.log("PLAYER_W", player);
+
       return player;
     }
   } catch (error) {
@@ -130,7 +130,7 @@ exports.createGameTeam = async (data, player) => {
   const { teamName, bio, image, uniqueKey } = data;
 
   const game = randomPathSet();
-  console.log("GAME", game);
+
   const curlevel = await initialCurlevel(game.stream);
   let members = [];
   members = [{ player: player._id, solvedLevels: [], levelsSolved: 0 }];
@@ -167,7 +167,7 @@ exports.getTeam = async id => {
     const team = await (await Team.findOne({ _id: id }))
       .populate("members.player")
       .execPopulate();
-    console.log("TEAM", team);
+
     if (!team) {
       throw new Error("No Team found.");
     }
