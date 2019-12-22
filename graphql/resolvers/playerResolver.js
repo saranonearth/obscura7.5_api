@@ -4,7 +4,8 @@ const {
   generateToken,
   createGameTeam,
   getPlayer,
-  getTeam
+  getTeam,
+  getlevel
 } = require("../util/resolverHelpers");
 const checkAuth = require("../util/checkAuth");
 const Team = require("../models/team");
@@ -220,6 +221,17 @@ module.exports = {
       } catch (error) {
         throw new Error("Teams could not be fetched.");
       }
+    },
+    async getLevel(_, { levelId }, context) {
+      await checkAuth(context);
+
+      const level = await getlevel(levelId);
+
+      return {
+        id: level._id,
+        data: level.file,
+        rlevelNo: level.rlevelNo
+      };
     }
   }
 };

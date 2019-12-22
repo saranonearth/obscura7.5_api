@@ -5,7 +5,7 @@ const jwt = require("jsonwebtoken");
 const Player = require("../models/player");
 const Team = require("../models/team");
 const Path = require("../models/stream");
-
+const Level = require("../models/level");
 // func to verify the token and get the user details
 exports.verifyToken = async token => {
   const client = new OAuth2Client(process.env.GID);
@@ -174,5 +174,14 @@ exports.getTeam = async id => {
     return team;
   } catch (error) {
     throw new Error("No Team found.", error);
+  }
+};
+
+exports.getlevel = async id => {
+  try {
+    const res = await Level.findOne({ _id: id });
+    return res;
+  } catch (error) {
+    throw new Error("Level could not be found.");
   }
 };

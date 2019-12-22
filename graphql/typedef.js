@@ -24,6 +24,16 @@ module.exports = gql`
     levelNo: Int
     level: ID
   }
+  type GameLevel {
+    rLevelNo: Int
+    temaLevelNo: Int
+    level: ID
+  }
+  type LevelData {
+    id: ID!
+    data: String!
+    rlevelNo: Int
+  }
   type Team {
     id: ID!
     teamName: String
@@ -39,13 +49,13 @@ module.exports = gql`
   }
 
   type Player {
-    id: ID
+    id: ID!
     name: String
     gameName: String
-    email: String!
-    group: Team
+    email: String
+    group: Team!
     firstTime: Boolean
-    image: String!
+    image: String
   }
   type Query {
     hello: String!
@@ -54,6 +64,7 @@ module.exports = gql`
     getParticularPlayer(playerId: String!): Player!
     getTeamInvitations: [dInvitations]!
     getAllTeams: [Team]!
+    getLevel(levelId: String!): LevelData!
   }
 
   type Mutation {

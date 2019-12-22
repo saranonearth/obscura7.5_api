@@ -25,7 +25,7 @@ const teamSchema = new Schema(
         },
         solvedLevels: [
           {
-            level: Number
+            levelNo: Number
           }
         ],
         levelsSolved: {
