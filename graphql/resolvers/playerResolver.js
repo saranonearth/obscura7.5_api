@@ -130,7 +130,8 @@ module.exports = {
             teamAdmin,
             uniqueKey,
             invitations,
-            bio
+            bio,
+            levelsSolved
           } = newTeam;
           return {
             id: _id,
@@ -143,7 +144,8 @@ module.exports = {
             teamAdmin,
             uniqueKey,
             invitations,
-            bio
+            bio,
+            levelsSolved
           };
         }
       } else {
@@ -184,7 +186,8 @@ module.exports = {
         members: team.members,
         teamAdmin: team.teamAdmin,
         uniqueKey: team.uniqueKey,
-        invitations: team.invitations
+        invitations: team.invitations,
+        levelsSolved: team.levelsSolved
       };
     },
     async getParticularPlayer(_, { playerId }, context) {
@@ -212,16 +215,20 @@ module.exports = {
 
       return invitations;
     },
-    async getAllTeams() {
+    async getAllTeams(_, { skip }) {
       try {
         const teams = await Team.find({})
-          .populate("members.player")
+          .limit(10)
+          .skip(skip)
+          .sort("-levelsSolved")
           .exec();
-        console.log(teams);
-
-        return teams;
+        const count = await Team.countDocuments({});
+        return {
+          teamCount: count,
+          teams
+        };
       } catch (error) {
-        throw new Error("Teams could not be fetched.");
+        throw new Error("Teams could not be fetched.", error);
       }
     },
     async getLevel(_, { levelId }, context) {
@@ -230,7 +237,7 @@ module.exports = {
       const level = await getlevel(levelId);
 
       return {
-        id: level._id,
+        id: levelId,
         data: level.file,
         rlevelNo: level.rlevelNo
       };

@@ -38,6 +38,7 @@ module.exports = gql`
     id: ID!
     teamName: String
     image: String
+    levelsSolved: Int
     curlevel: curlevel
     stream: String!
     answerset: String!
@@ -61,13 +62,17 @@ module.exports = gql`
     firstTime: Boolean
     image: String
   }
+  type Teams {
+    teamCount: Int
+    teams: [Team]!
+  }
   type Query {
     hello: String!
     getGamePlayer: Player!
     getGameTeam(teamId: ID!): Team!
     getParticularPlayer(playerId: String!): Player!
     getTeamInvitations: [dInvitations]!
-    getAllTeams: [Team]!
+    getAllTeams(skip: Int): Teams!
     getLevel(levelId: String!): LevelData!
     getTeamLevels: [TeamLevel]!
   }
