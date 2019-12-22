@@ -47,6 +47,10 @@ module.exports = gql`
     invitations: [Invitation]
     bio: String
   }
+  type TeamLevel {
+    levelNo: Int
+    level: ID
+  }
 
   type Player {
     id: ID!
@@ -65,6 +69,7 @@ module.exports = gql`
     getTeamInvitations: [dInvitations]!
     getAllTeams: [Team]!
     getLevel(levelId: String!): LevelData!
+    getTeamLevels: [TeamLevel]!
   }
 
   type Mutation {

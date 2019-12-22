@@ -6,6 +6,7 @@ const Player = require("../models/player");
 const Team = require("../models/team");
 const Path = require("../models/stream");
 const Level = require("../models/level");
+const Stream = require("../models/stream");
 // func to verify the token and get the user details
 exports.verifyToken = async token => {
   const client = new OAuth2Client(process.env.GID);
@@ -183,5 +184,23 @@ exports.getlevel = async id => {
     return res;
   } catch (error) {
     throw new Error("Level could not be found.");
+  }
+};
+
+exports.getLevels = async () => {
+  try {
+    const res = await Level.find({});
+    return res;
+  } catch (error) {
+    throw new Error("Count get the game levels");
+  }
+};
+
+exports.getStream = async name => {
+  try {
+    const res = await Stream.find({ streamName: name });
+    return res;
+  } catch (error) {
+    throw new Error("Count get the game levels");
   }
 };

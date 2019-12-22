@@ -5,7 +5,9 @@ const {
   createGameTeam,
   getPlayer,
   getTeam,
-  getlevel
+  getlevel,
+  getLevels,
+  getStream
 } = require("../util/resolverHelpers");
 const checkAuth = require("../util/checkAuth");
 const Team = require("../models/team");
@@ -232,6 +234,17 @@ module.exports = {
         data: level.file,
         rlevelNo: level.rlevelNo
       };
+    },
+    async getTeamLevels(_, a, context) {
+      const player = await checkAuth(context);
+      const popPlayer = await player.populate("group").execPopulate();
+      const team = popPlayer.group;
+      const curLevel = team.curlevel.levelNo;
+      const stream = team.stream;
+      const gameStream = await getStream(stream);
+      const index = gameStream[0].levels.map(e => e.levelNo).indexOf(curLevel);
+      const teamLevels = gameStream[0].levels.slice(0, index + 1);
+      return teamLevels;
     }
   }
 };
