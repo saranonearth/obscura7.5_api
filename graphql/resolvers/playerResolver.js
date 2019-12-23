@@ -6,8 +6,8 @@ const {
   getPlayer,
   getTeam,
   getlevel,
-  getLevels,
-  getStream
+  getStream,
+  getAnswerset
 } = require("../util/resolverHelpers");
 const checkAuth = require("../util/checkAuth");
 const Team = require("../models/team");
@@ -151,6 +151,67 @@ module.exports = {
       } else {
         throw new Error("Requesting player is not the admin");
       }
+    },
+    async checkAnswer(_, { answer, levelNo }, context) {
+      const player = await checkAuth(context);
+      const popPlayer = await player.populate("group").execPopulate();
+      const team = popPlayer.group;
+      const curlvl = team.curlevel.levelNo;
+      const stream = team.stream;
+      const teamStream = await getStream(stream);
+      const curlvlIndex = teamStream[0].levels
+        .map(e => e.levelNo)
+        .indexOf(curlvl);
+      const index = teamStream[0].levels.map(e => e.levelNo).indexOf(levelNo);
+
+      if (index < curlvlIndex) {
+        throw new Error("Level Already solved.");
+      }
+
+      const set = team.answerset;
+      const answerSet = await getAnswerset(set);
+      const answerOb = answerSet[0].answers.find(e => e.levelNo === levelNo);
+
+      if (answerOb.answer === answer) {
+        const Team = await getTeam(player.group);
+        console.log(Team);
+
+        Team.levelsSolved = Team.levelsSolved + 1;
+        console.log(Team.members);
+        const TeamMembers = Team.members;
+        let member = TeamMembers.find(
+          e => player._id.toString() === e.player._id.toString()
+        );
+
+        console.log("MEMBER", member);
+        console.log("INDEX", index);
+        const newSolLevelMem = member.levelsSolved + 1;
+        const newMember = {
+          player: member.player,
+          solvedLevels: [...member.solvedLevels, { levelNo: index + 1 }],
+          levelsSolved: newSolLevelMem
+        };
+        const filteredMembers = team.members.filter(
+          e => e.player._id.toString() !== player._id.toString()
+        );
+
+        const newMembers = [...filteredMembers, newMember];
+        console.log("NEW MEMBERS", newMembers);
+        Team.members = newMembers;
+
+        const newCurlevel = {
+          levelNo: teamStream[0].levels[index + 1].levelNo,
+          level: teamStream[0].levels[index + 1].level
+        };
+
+        Team.curlevel = newCurlevel;
+
+        const newTeam = await Team.save();
+        console.log("NEW TEAM", newTeam);
+        return true;
+      } else {
+        return false;
+      }
     }
   },
   Query: {
@@ -232,7 +293,24 @@ module.exports = {
       }
     },
     async getLevel(_, { levelId }, context) {
-      await checkAuth(context);
+      const player = await checkAuth(context);
+      const popPlayer = await player.populate("group").execPopulate();
+      const team = popPlayer.group;
+      const stream = team.stream;
+      const Stream = await getStream(stream);
+      const curLevel = team.curlevel.levelNo;
+      const curlvlIndex = Stream[0].levels
+        .map(e => e.levelNo)
+        .indexOf(curLevel);
+      const index = Stream[0].levels
+        .map(e => e.level.toString())
+        .indexOf(levelId.toString());
+      console.log(curlvlIndex);
+      console.log(index);
+
+      if (index > curlvlIndex) {
+        throw new Error("You do not have access to that level.");
+      }
 
       const level = await getlevel(levelId);
 

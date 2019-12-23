@@ -87,5 +87,6 @@ module.exports = gql`
     ): Team!
     sendInvite(teamId: String!): String!
     acceptInvite(playerId: String!, inviteId: String!): Team!
+    checkAnswer(answer: String!, levelNo: Int!): Boolean!
   }
 `;
