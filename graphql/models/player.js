@@ -13,6 +13,7 @@ const playerSchema = new Schema(
       type: String,
       unique: true
     },
+    uniqueKey: String,
     group: {
       type: Schema.Types.ObjectId,
       ref: "teams",

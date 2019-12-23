@@ -212,6 +212,24 @@ module.exports = {
       } else {
         return false;
       }
+    },
+    async onBoard(_, { gameName, image, uniqueKey }, context) {
+      const player = await checkAuth(context);
+      try {
+        player.image = image;
+        player.gameName = gameName;
+        player.uniqueKey = uniqueKey;
+
+        player.firstTime = false;
+
+        const res = await player.save();
+        return {
+          ...res._doc,
+          id: res._doc._id
+        };
+      } catch (error) {
+        throw new Error("Could not be on boarded.");
+      }
     }
   },
   Query: {

@@ -57,6 +57,7 @@ module.exports = gql`
     id: ID!
     name: String
     gameName: String
+    uniqueKey: String
     email: String
     group: Team!
     firstTime: Boolean
@@ -85,6 +86,7 @@ module.exports = gql`
       image: String!
       uniqueKey: String!
     ): Team!
+    onBoard(gameName: String!, image: String!, uniqueKey: String!): Player!
     sendInvite(teamId: String!): String!
     acceptInvite(playerId: String!, inviteId: String!): Team!
     checkAnswer(answer: String!, levelNo: Int!): Boolean!
