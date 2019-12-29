@@ -14,11 +14,16 @@ const Team = require("../models/team");
 
 module.exports = {
   Mutation: {
-    async auth(_, { token }) {
+    async auth(_, {
+      token
+    }) {
       try {
         const ticket = await verifyToken(token);
-        const userId = await getCreatePlayer(ticket);
-        const jwtToken = await generateToken({ id: userId, isAuth: true });
+        const player = await getCreatePlayer(ticket);
+        const jwtToken = await generateToken({
+          id: player._id,
+          firstTime: player.firstTime
+        });
 
         return {
           token: jwtToken
@@ -47,7 +52,9 @@ module.exports = {
         invitations: team.invitations
       };
     },
-    async sendInvite(_, { teamId }, context) {
+    async sendInvite(_, {
+      teamId
+    }, context) {
       const player = await checkAuth(context);
       const team = await getTeam(teamId);
 
@@ -72,7 +79,10 @@ module.exports = {
 
       return "Invitation sent successfully.";
     },
-    async acceptInvite(_, { playerId, inviteId }, context) {
+    async acceptInvite(_, {
+      playerId,
+      inviteId
+    }, context) {
       const adminPlayer = await checkAuth(context);
       const team = await getTeam(adminPlayer.group);
 
@@ -152,7 +162,10 @@ module.exports = {
         throw new Error("Requesting player is not the admin");
       }
     },
-    async checkAnswer(_, { answer, levelNo }, context) {
+    async checkAnswer(_, {
+      answer,
+      levelNo
+    }, context) {
       const player = await checkAuth(context);
       const popPlayer = await player.populate("group").execPopulate();
       const team = popPlayer.group;
@@ -188,7 +201,12 @@ module.exports = {
         const newSolLevelMem = member.levelsSolved + 1;
         const newMember = {
           player: member.player,
-          solvedLevels: [...member.solvedLevels, { levelNo: index + 1 }],
+          solvedLevels: [
+            ...member.solvedLevels,
+            {
+              levelNo: index + 1
+            }
+          ],
           levelsSolved: newSolLevelMem
         };
         const filteredMembers = team.members.filter(
@@ -213,7 +231,11 @@ module.exports = {
         return false;
       }
     },
-    async onBoard(_, { gameName, image, uniqueKey }, context) {
+    async onBoard(_, {
+      gameName,
+      image,
+      uniqueKey
+    }, context) {
       const player = await checkAuth(context);
       try {
         player.image = image;
@@ -223,9 +245,16 @@ module.exports = {
         player.firstTime = false;
 
         const res = await player.save();
+        const token = await generateToken({
+          id: res._doc._id,
+          firstTime: false
+        });
         return {
-          ...res._doc,
-          id: res._doc._id
+          player: {
+            ...res._doc,
+            id: res._doc._id
+          },
+          token: token
         };
       } catch (error) {
         throw new Error("Could not be on boarded.");
@@ -236,9 +265,17 @@ module.exports = {
     async getGamePlayer(_, a, context) {
       const player = await checkAuth(context);
 
-      const Player = await getPlayer(player._id, "WITH_TEAM");
+      const Player = await getPlayer(player._id, "WITHOUT_TEAM");
       console.log(Player);
-      const { _id, name, gameName, image, firstTime, email, group } = Player;
+      const {
+        _id,
+        name,
+        gameName,
+        image,
+        firstTime,
+        email,
+        group
+      } = Player;
       return {
         id: _id,
         name,
@@ -249,7 +286,9 @@ module.exports = {
         group
       };
     },
-    async getGameTeam(_, { teamId }) {
+    async getGameTeam(_, {
+      teamId
+    }) {
       if (!teamId) {
         throw new Error("No team ID found");
       }
@@ -269,7 +308,9 @@ module.exports = {
         levelsSolved: team.levelsSolved
       };
     },
-    async getParticularPlayer(_, { playerId }, context) {
+    async getParticularPlayer(_, {
+      playerId
+    }, context) {
       const player = await getPlayer(playerId, "WITH_TEAM");
       console.log("PLAYER", player);
 
@@ -294,7 +335,9 @@ module.exports = {
 
       return invitations;
     },
-    async getAllTeams(_, { skip }) {
+    async getAllTeams(_, {
+      skip
+    }) {
       try {
         const teams = await Team.find({})
           .limit(10)
@@ -310,7 +353,9 @@ module.exports = {
         throw new Error("Teams could not be fetched.", error);
       }
     },
-    async getLevel(_, { levelId }, context) {
+    async getLevel(_, {
+      levelId
+    }, context) {
       const player = await checkAuth(context);
       const popPlayer = await player.populate("group").execPopulate();
       const team = popPlayer.group;

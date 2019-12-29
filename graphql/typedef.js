@@ -24,6 +24,10 @@ module.exports = gql`
     levelNo: Int
     level: ID
   }
+  type onboard {
+    player: Player!
+    token: String
+  }
   type GameLevel {
     rLevelNo: Int
     temaLevelNo: Int
@@ -59,7 +63,7 @@ module.exports = gql`
     gameName: String
     uniqueKey: String
     email: String
-    group: Team!
+    group: ID
     firstTime: Boolean
     image: String
   }
@@ -86,7 +90,7 @@ module.exports = gql`
       image: String!
       uniqueKey: String!
     ): Team!
-    onBoard(gameName: String!, image: String!, uniqueKey: String!): Player!
+    onBoard(gameName: String!, image: String!, uniqueKey: String!): onboard!
     sendInvite(teamId: String!): String!
     acceptInvite(playerId: String!, inviteId: String!): Team!
     checkAnswer(answer: String!, levelNo: Int!): Boolean!

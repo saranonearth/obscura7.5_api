@@ -1,5 +1,9 @@
-const { AuthenticationError } = require("apollo-server");
-const { OAuth2Client } = require("google-auth-library");
+const {
+  AuthenticationError
+} = require("apollo-server");
+const {
+  OAuth2Client
+} = require("google-auth-library");
 const jwt = require("jsonwebtoken");
 
 const Player = require("../models/player");
@@ -27,13 +31,19 @@ exports.verifyToken = async token => {
 
 // func to get or create a player and return ID
 exports.getCreatePlayer = async ticket => {
-  const { email, name, picture } = ticket;
+  const {
+    email,
+    name,
+    picture
+  } = ticket;
 
   try {
-    const player = await Player.findOne({ email });
+    const player = await Player.findOne({
+      email
+    });
 
     if (player) {
-      return player._doc._id;
+      return player._doc;
     } else {
       const newPlayer = new Player({
         name,
@@ -42,7 +52,7 @@ exports.getCreatePlayer = async ticket => {
       });
 
       const res = await newPlayer.save();
-      return res._doc._id;
+      return res._doc;
     }
   } catch (error) {
     throw new Error("User neither be fetched nor created");
@@ -65,7 +75,9 @@ exports.generateToken = async data => {
 //Function to get the initial Stream's level
 const initialCurlevel = async stream => {
   try {
-    const path = await Path.find({ streamName: stream });
+    const path = await Path.find({
+      streamName: stream
+    });
 
     return path[0].levels[0];
   } catch (error) {
@@ -105,7 +117,9 @@ const randomPathSet = () => {
 exports.getPlayer = async (id, state) => {
   try {
     if (state === "WITHOUT_TEAM") {
-      const player = await Player.findOne({ _id: id });
+      const player = await Player.findOne({
+        _id: id
+      });
 
       if (!player) {
         throw new Error("No Player found.");
@@ -113,7 +127,9 @@ exports.getPlayer = async (id, state) => {
       return player;
     }
     if (state === "WITH_TEAM") {
-      const player = await (await Player.findOne({ _id: id }))
+      const player = await (await Player.findOne({
+          _id: id
+        }))
         .populate("group")
         .execPopulate();
 
@@ -130,13 +146,22 @@ exports.getPlayer = async (id, state) => {
 
 // Function to create team
 exports.createGameTeam = async (data, player) => {
-  const { teamName, bio, image, uniqueKey } = data;
-
+  const {
+    teamName,
+    bio,
+    image,
+    uniqueKey
+  } = data;
+  console.log(teamName)
   const game = randomPathSet();
 
   const curlevel = await initialCurlevel(game.stream);
   let members = [];
-  members = [{ player: player._id, solvedLevels: [], levelsSolved: 0 }];
+  members = [{
+    player: player._id,
+    solvedLevels: [],
+    levelsSolved: 0
+  }];
 
   try {
     const newTeam = new Team({
@@ -167,7 +192,9 @@ exports.createGameTeam = async (data, player) => {
 
 exports.getTeam = async id => {
   try {
-    const team = await (await Team.findOne({ _id: id }))
+    const team = await (await Team.findOne({
+        _id: id
+      }))
       .populate("members.player")
       .execPopulate();
 
@@ -182,7 +209,9 @@ exports.getTeam = async id => {
 
 exports.getlevel = async id => {
   try {
-    const res = await Level.findOne({ _id: id });
+    const res = await Level.findOne({
+      _id: id
+    });
     return res;
   } catch (error) {
     throw new Error("Level could not be found.");
@@ -200,7 +229,9 @@ exports.getLevels = async () => {
 
 exports.getStream = async name => {
   try {
-    const res = await Stream.find({ streamName: name });
+    const res = await Stream.find({
+      streamName: name
+    });
     return res;
   } catch (error) {
     throw new Error("Could not get the game levels");
@@ -209,7 +240,9 @@ exports.getStream = async name => {
 
 exports.getAnswerset = async set => {
   try {
-    const res = await Answersets.find({ setName: set });
+    const res = await Answersets.find({
+      setName: set
+    });
     return res;
   } catch (error) {
     throw new Error("Could not get answerser.");
