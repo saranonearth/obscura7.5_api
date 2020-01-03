@@ -15,6 +15,7 @@ module.exports = gql `
     levelsSolved: Int!
   }
   type dInvitations {
+    id: ID!
     player: Player!
   }
   type Invitation {
