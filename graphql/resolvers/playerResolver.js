@@ -14,9 +14,7 @@ const Team = require("../models/team");
 
 module.exports = {
   Mutation: {
-    async auth(_, {
-      token
-    }) {
+    async auth(_, { token }) {
       try {
         const ticket = await verifyToken(token);
         const player = await getCreatePlayer(ticket);
@@ -52,9 +50,7 @@ module.exports = {
         invitations: team.invitations
       };
     },
-    async sendInvite(_, {
-      teamId
-    }, context) {
+    async sendInvite(_, { teamId }, context) {
       const player = await checkAuth(context);
       const team = await getTeam(teamId);
 
@@ -79,10 +75,7 @@ module.exports = {
 
       return "Invitation sent successfully.";
     },
-    async acceptInvite(_, {
-      playerId,
-      inviteId
-    }, context) {
+    async acceptInvite(_, { playerId, inviteId }, context) {
       const adminPlayer = await checkAuth(context);
       const team = await getTeam(adminPlayer.group);
 
@@ -90,6 +83,12 @@ module.exports = {
       console.log(adminPlayer._id.toString() === team.teamAdmin.toString());
       if (adminPlayer._id.toString() === team.teamAdmin.toString()) {
         console.log("HERE");
+
+        const invitePlayer = await getPlayer(playerId);
+
+        if (invitePlayer.group !== null) {
+          throw new Error("Player is already in a team");
+        }
 
         // updating team member
 
@@ -162,10 +161,7 @@ module.exports = {
         throw new Error("Requesting player is not the admin");
       }
     },
-    async checkAnswer(_, {
-      answer,
-      levelNo
-    }, context) {
+    async checkAnswer(_, { answer, levelNo }, context) {
       const player = await checkAuth(context);
       const popPlayer = await player.populate("group").execPopulate();
       const team = popPlayer.group;
@@ -231,11 +227,7 @@ module.exports = {
         return false;
       }
     },
-    async onBoard(_, {
-      gameName,
-      image,
-      uniqueKey
-    }, context) {
+    async onBoard(_, { gameName, image, uniqueKey }, context) {
       const player = await checkAuth(context);
       try {
         player.image = image;
@@ -267,15 +259,7 @@ module.exports = {
 
       const Player = await getPlayer(player._id, "WITHOUT_TEAM");
       console.log(Player);
-      const {
-        _id,
-        name,
-        gameName,
-        image,
-        firstTime,
-        email,
-        group
-      } = Player;
+      const { _id, name, gameName, image, firstTime, email, group } = Player;
       return {
         id: _id,
         name,
@@ -286,9 +270,7 @@ module.exports = {
         group
       };
     },
-    async getGameTeam(_, {
-      teamId
-    }) {
+    async getGameTeam(_, { teamId }) {
       if (!teamId) {
         throw new Error("No team ID found");
       }
@@ -296,6 +278,7 @@ module.exports = {
       const team = await getTeam(teamId);
       console.log(team);
       return {
+        id: team._id,
         teamName: team.teamName,
         image: team.image,
         curlevel: team.curlevel,
@@ -305,12 +288,11 @@ module.exports = {
         teamAdmin: team.teamAdmin,
         uniqueKey: team.uniqueKey,
         invitations: team.invitations,
-        levelsSolved: team.levelsSolved
+        levelsSolved: team.levelsSolved,
+        bio: team.bio
       };
     },
-    async getParticularPlayer(_, {
-      playerId
-    }, context) {
+    async getParticularPlayer(_, { playerId }, context) {
       const player = await getPlayer(playerId, "WITH_TEAM");
       console.log("PLAYER", player);
 
@@ -335,9 +317,7 @@ module.exports = {
 
       return invitations;
     },
-    async getAllTeams(_, {
-      skip
-    }) {
+    async getAllTeams(_, { skip }) {
       try {
         const teams = await Team.find({})
           .limit(10)
@@ -353,9 +333,7 @@ module.exports = {
         throw new Error("Teams could not be fetched.", error);
       }
     },
-    async getLevel(_, {
-      levelId
-    }, context) {
+    async getLevel(_, { levelId }, context) {
       const player = await checkAuth(context);
       const popPlayer = await player.populate("group").execPopulate();
       const team = popPlayer.group;

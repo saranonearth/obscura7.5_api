@@ -1,6 +1,6 @@
 const gql = require("graphql-tag");
 
-module.exports = gql`
+module.exports = gql `
   type token {
     token: String!
   }
@@ -74,7 +74,7 @@ module.exports = gql`
   type Query {
     hello: String!
     getGamePlayer: Player!
-    getGameTeam(teamId: ID!): Team!
+    getGameTeam(teamId: String!): Team!
     getParticularPlayer(playerId: String!): Player!
     getTeamInvitations: [dInvitations]!
     getAllTeams(skip: Int): Teams!
