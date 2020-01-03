@@ -87,6 +87,11 @@ module.exports = {
         const invitePlayer = await getPlayer(playerId);
 
         if (invitePlayer.group !== null) {
+          const invitations = team.invitations;
+          const newInvitations = invitations.filter(e => e.id !== inviteId);
+          team.invitations = newInvitations;
+          await team.save();
+
           throw new Error("Player is already in a team");
         }
 
