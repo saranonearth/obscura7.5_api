@@ -65,7 +65,7 @@ module.exports = {
       const checkAlready = invitations.find(
         e => e.player.toString() === player._id.toString()
       );
-      console.log("CHECK", checkAlready);
+
 
       if (checkAlready) {
         return "Already invitation sent";
@@ -78,6 +78,22 @@ module.exports = {
 
       await team.save();
 
+      const InviteId = team.invitations.find(p => p.player.toString() === player._id.toString())
+      console.log("INVITE ID", InviteId)
+      context.pubsub.publish("NEW_INVITE", {
+        pushInvite: {
+          teamId,
+          invite: {
+            id: InviteId._id,
+            player: {
+              id: player.id,
+              name: player.name,
+              image: player.image,
+              uniqueKey: player.uniqueKey
+            }
+          }
+        }
+      })
       return "Invitation sent successfully.";
     },
     async acceptInvite(_, {
@@ -88,9 +104,9 @@ module.exports = {
       const team = await getTeam(adminPlayer.group);
 
       //should be admin
-      console.log(adminPlayer._id.toString() === team.teamAdmin.toString());
+
       if (adminPlayer._id.toString() === team.teamAdmin.toString()) {
-        console.log("HERE");
+
 
         const invitePlayer = await getPlayer(playerId, 'WITHOUT_TEAM');
         console.log("INVITE PLAYER", invitePlayer)
@@ -141,6 +157,14 @@ module.exports = {
 
           const newTeam = await res.populate("members.player").execPopulate();
           console.log(newTeam);
+
+          context.pubsub.publish("PUSH_TEAM", {
+            pushTeam: {
+              playerId,
+              team: newTeam
+            }
+          })
+
           const {
             _id,
             teamName,
@@ -155,6 +179,7 @@ module.exports = {
             bio,
             levelsSolved
           } = newTeam;
+
           return {
             id: _id,
             teamName,
@@ -190,7 +215,10 @@ module.exports = {
       const index = teamStream[0].levels.map(e => e.levelNo).indexOf(levelNo);
 
       if (index < curlvlIndex) {
-        throw new Error("Level Already solved.");
+        return {
+          message: 'Level Already Solved',
+          newCurlevel: null
+        }
       }
 
       const set = team.answerset;
@@ -216,7 +244,7 @@ module.exports = {
           solvedLevels: [
             ...member.solvedLevels,
             {
-              levelNo: index + 1
+              levelNo: index
             }
           ],
           levelsSolved: newSolLevelMem
@@ -238,9 +266,15 @@ module.exports = {
 
         const newTeam = await Team.save();
         console.log("NEW TEAM", newTeam);
-        return true;
+        return {
+          message: "Correct Answer",
+          newCurlevel: newCurlevel
+        };
       } else {
-        return false;
+        return {
+          message: 'Wrong Answer',
+          newCurlevel: null
+        };
       }
     },
     async onBoard(_, {

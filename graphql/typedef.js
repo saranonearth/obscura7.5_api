@@ -6,7 +6,7 @@ module.exports = gql `
   }
 
   type Level {
-    level: Int
+    levelNo: Int
   }
 
   type teamMember {
@@ -72,6 +72,20 @@ module.exports = gql `
     teamCount: Int
     teams: [Team]!
   }
+  type Answer {
+    message: String!
+    newCurlevel: TeamLevel
+  }
+  type pushInvite {
+    teamId: String
+    invite: dInvitations
+  }
+
+  type pushTeam {
+    playerId: String
+    team: Team
+  }
+
   type Query {
     hello: String!
     getGamePlayer: Player!
@@ -94,6 +108,11 @@ module.exports = gql `
     onBoard(gameName: String!, image: String!, uniqueKey: String!): onboard!
     sendInvite(teamId: String!): String!
     acceptInvite(playerId: String!, inviteId: String!): Team!
-    checkAnswer(answer: String!, levelNo: Int!): Boolean!
+    checkAnswer(answer: String!, levelNo: Int!): Answer!
+  }
+
+  type Subscription {
+    pushInvite(teamId: String!): pushInvite!
+    pushTeam(playerId: String!): pushTeam!
   }
 `;
