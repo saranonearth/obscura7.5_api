@@ -4,7 +4,11 @@ const typeDefs = require("./graphql/typedef");
 const mongoose = require("mongoose");
 const resolvers = require("./graphql/resolvers");
 const checkAuth = require("./graphql/util/checkAuth");
+<<<<<<< HEAD
 const PORT = 4000 ||  process.env.port;
+=======
+const PORT = 4000 || process.env.port;
+>>>>>>> 152f1fa (Send Invite-Accept Invite Subscriptions Added)
 
 const pubsub = new PubSub();
 const server = new ApolloServer({

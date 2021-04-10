@@ -1,0 +1,8 @@
+{
+    "appService.zipIgnorePattern": [
+        "node_modules{,/**}",
+        ".vscode{,/**}"
+    ],
+    "appService.deploySubpath": ".",
+    "appService.defaultWebAppToDeploy": "/subscriptions/f820b620-4278-4cfa-bcbd-d25fd57f6050/resourceGroups/appsvc_linux_centralus_basic/providers/Microsoft.Web/sites/graphql-ObscurA"
+}
